@@ -4,18 +4,19 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Callable
-from typing import Any, TypeVar
+from collections.abc import Callable, Sequence
+from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from miio import AirPurifier, DeviceException
 
 from .const import DOMAIN, UPDATE_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
-_T = TypeVar("_T")
+DeviceCommand = tuple[Callable[..., Any], tuple[Any, ...]]
 
 
 def status_value(status: Any, name: str, default: Any = None) -> Any:
@@ -62,14 +63,18 @@ class XiaomiAirPurifierCoordinator(DataUpdateCoordinator[Any]):
                 f"Unable to communicate with the air purifier: {err}"
             ) from err
 
-    async def async_command(self, command: Callable[..., _T], *args: Any) -> _T:
-        """Run one device command and refresh state."""
+    async def async_execute_commands(self, commands: Sequence[DeviceCommand]) -> None:
+        """Run device commands serially and refresh state once."""
         try:
             async with self._command_lock:
-                result = await self.hass.async_add_executor_job(command, *args)
+                for command, args in commands:
+                    await self.hass.async_add_executor_job(command, *args)
         except DeviceException as err:
-            raise UpdateFailed(
+            raise HomeAssistantError(
                 f"The air purifier did not accept the command: {err}"
             ) from err
         await self.async_request_refresh()
-        return result
+
+    async def async_command(self, command: Callable[..., Any], *args: Any) -> None:
+        """Run one device command and refresh state."""
+        await self.async_execute_commands(((command, args),))

@@ -73,11 +73,22 @@ class XiaomiAirPurifierFan(XiaomiAirPurifierEntity, FanEntity):
         **kwargs: object,
     ) -> None:
         """Turn on the purifier."""
-        await self.coordinator.async_command(self.coordinator.device.on)
+        commands = [(self.coordinator.device.on, ())]
         if preset_mode is not None:
-            await self.async_set_preset_mode(preset_mode)
+            if preset_mode not in PRESET_TO_MODE:
+                raise ValueError(f"Unsupported preset mode: {preset_mode}")
+            commands.append(
+                (self.coordinator.device.set_mode, (PRESET_TO_MODE[preset_mode],))
+            )
         elif percentage is not None:
-            await self.async_set_percentage(percentage)
+            level = self._percentage_to_level(percentage)
+            commands.extend(
+                (
+                    (self.coordinator.device.set_favorite_level, (level,)),
+                    (self.coordinator.device.set_mode, (OperationMode.Favorite,)),
+                )
+            )
+        await self.coordinator.async_execute_commands(commands)
 
     async def async_turn_off(self, **kwargs: object) -> None:
         """Turn off the purifier."""
@@ -88,12 +99,12 @@ class XiaomiAirPurifierFan(XiaomiAirPurifierEntity, FanEntity):
         if percentage == 0:
             await self.async_turn_off()
             return
-        level = max(1, min(16, round(percentage * 16 / 100)))
-        await self.coordinator.async_command(
-            self.coordinator.device.set_favorite_level, level
-        )
-        await self.coordinator.async_command(
-            self.coordinator.device.set_mode, OperationMode.Favorite
+        level = self._percentage_to_level(percentage)
+        await self.coordinator.async_execute_commands(
+            (
+                (self.coordinator.device.set_favorite_level, (level,)),
+                (self.coordinator.device.set_mode, (OperationMode.Favorite,)),
+            )
         )
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
@@ -103,3 +114,8 @@ class XiaomiAirPurifierFan(XiaomiAirPurifierEntity, FanEntity):
         await self.coordinator.async_command(
             self.coordinator.device.set_mode, PRESET_TO_MODE[preset_mode]
         )
+
+    @staticmethod
+    def _percentage_to_level(percentage: int) -> int:
+        """Convert a Home Assistant percentage to a favorite level."""
+        return max(1, min(16, round(percentage * 16 / 100)))
