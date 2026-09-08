@@ -31,7 +31,12 @@ class XiaomiAirPurifierFan(XiaomiAirPurifierEntity, FanEntity):
     """Control the purifier as a fan."""
 
     _attr_translation_key = "air_purifier"
-    _attr_supported_features = FanEntityFeature.SET_SPEED | FanEntityFeature.PRESET_MODE
+    _attr_supported_features = (
+        FanEntityFeature.SET_SPEED
+        | FanEntityFeature.PRESET_MODE
+        | FanEntityFeature.TURN_ON
+        | FanEntityFeature.TURN_OFF
+    )
     _attr_preset_modes: ClassVar[list[str]] = list(PRESET_TO_MODE)
     _attr_speed_count = 16
 
