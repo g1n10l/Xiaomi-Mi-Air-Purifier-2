@@ -1,0 +1,15 @@
+{
+  "config": {
+    "step": {"user": {"title": "Połącz Xiaomi Mi Air Purifier 2", "description": "Podaj lokalny adres IP i 32-znakowy token miIO.", "data": {"host": "Adres IP", "token": "Token miIO"}}},
+    "error": {"cannot_connect": "Nie udało się połączyć z oczyszczaczem. Sprawdź adres IP, token i dostęp do sieci.", "invalid_token": "Token musi zawierać dokładnie 32 znaki szesnastkowe.", "unsupported_model": "Urządzenie nie jest obsługiwanym wariantem Xiaomi Mi Air Purifier 2.", "unknown": "Nieoczekiwany błąd"},
+    "abort": {"already_configured": "Ten oczyszczacz jest już skonfigurowany."}
+  },
+  "entity": {
+    "fan": {"air_purifier": {"name": "Oczyszczacz powietrza"}},
+    "sensor": {"aqi": {"name": "PM2.5"}, "temperature": {"name": "Temperatura"}, "humidity": {"name": "Wilgotność"}, "filter_life_remaining": {"name": "Pozostała żywotność filtra"}, "filter_hours_used": {"name": "Czas pracy filtra"}, "motor_speed": {"name": "Prędkość silnika"}, "use_time": {"name": "Czas pracy"}, "purify_volume": {"name": "Objętość oczyszczonego powietrza"}},
+    "binary_sensor": {"filter_warning": {"name": "Wymiana filtra"}},
+    "switch": {"buzzer": {"name": "Brzęczyk"}, "child_lock": {"name": "Blokada rodzicielska"}, "led": {"name": "LED"}},
+    "number": {"favorite_level": {"name": "Poziom ulubiony"}},
+    "select": {"led_brightness": {"name": "Jasność LED"}}
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "domain": "xiaomi_mi_air_purifier_2",
+  "name": "Xiaomi Mi Air Purifier 2",
+  "codeowners": ["@g1n10l"],
+  "config_flow": true,
+  "documentation": "https://github.com/g1n10l/Xiaomi-Mi-Air-Purifier-2",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/g1n10l/Xiaomi-Mi-Air-Purifier-2/issues",
+  "requirements": ["python-miio==0.5.12"],
+  "version": "1.0.0"
+}
