@@ -12,9 +12,9 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
-    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
     PERCENTAGE,
     REVOLUTIONS_PER_MINUTE,
+    UnitOfDensity,
     UnitOfTemperature,
     UnitOfTime,
     UnitOfVolume,
@@ -38,7 +38,7 @@ SENSORS = (
     PurifierSensorDescription(
         key="aqi",
         translation_key="aqi",
-        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+        native_unit_of_measurement=UnitOfDensity.MICROGRAMS_PER_CUBIC_METER,
         device_class=SensorDeviceClass.PM25,
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda status: status_value(status, "aqi"),
